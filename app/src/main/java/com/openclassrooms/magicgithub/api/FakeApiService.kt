@@ -36,4 +36,9 @@ class FakeApiService : ApiService {
             _users[index] = user
         }
     }
+
+    override fun setUsers(users: List<User>) {
+        _users.clear()
+        _users.addAll(users)
+    }
 }

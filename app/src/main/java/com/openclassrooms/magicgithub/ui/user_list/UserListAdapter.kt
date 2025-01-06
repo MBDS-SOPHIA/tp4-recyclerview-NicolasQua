@@ -36,4 +36,12 @@ class UserListAdapter(private val callback: Listener) : RecyclerView.Adapter<Lis
     fun getUserAtPosition(position: Int): User? {
         return if (position in users.indices) users[position] else null
     }
+
+    fun moveItem(fromPosition: Int, toPosition: Int) {
+        val mutableUsers = users.toMutableList()
+        val user = mutableUsers.removeAt(fromPosition)
+        mutableUsers.add(toPosition, user)
+        users = mutableUsers
+        notifyItemMoved(fromPosition, toPosition)
+    }
 }

@@ -36,6 +36,19 @@ class ListUserActivity : AppCompatActivity(), UserListAdapter.Listener {
     private fun configureRecyclerView() {
         adapter = UserListAdapter(this)
         binding.activityListUserRv.adapter = adapter
+
+        // Ajout du gestionnaire de déplacement
+        val itemTouchHelper = ItemTouchHelper(
+            ItemMoveCallback(adapter) { fromPosition, toPosition ->
+                onUserMoved(fromPosition, toPosition)
+            }
+        )
+        itemTouchHelper.attachToRecyclerView(binding.activityListUserRv)
+    }
+
+    private fun onUserMoved(fromPosition: Int, toPosition: Int) {
+        getRepository().moveUser(fromPosition, toPosition)
+        loadData() // Recharge la liste pour refléter l'ordre modifié
     }
 
     private fun configureFab() {

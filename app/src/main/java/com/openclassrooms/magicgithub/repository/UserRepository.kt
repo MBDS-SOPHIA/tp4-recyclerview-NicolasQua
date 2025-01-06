@@ -22,4 +22,12 @@ class UserRepository(
     fun updateUser(user: User) {
         (apiService as? FakeApiService)?.updateUser(user)
     }
+
+    fun moveUser(fromPosition: Int, toPosition: Int) {
+        val mutableUsers = apiService.getUsers().toMutableList()
+        val user = mutableUsers.removeAt(fromPosition)
+        mutableUsers.add(toPosition, user)
+        // Met à jour la liste dans l'ApiService
+        apiService.setUsers(mutableUsers)
+    }
 }

@@ -7,6 +7,9 @@ import com.openclassrooms.magicgithub.model.User
 import com.openclassrooms.magicgithub.repository.UserRepository
 import org.junit.Assert
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -30,10 +33,7 @@ class UserRepositoryTest {
     fun getUsersWithSuccess() {
         val usersActual = userRepository.getUsers()
         val usersExpected: List<User> = FAKE_USERS
-        assertEquals(
-            usersActual,
-            usersExpected
-        )
+        assertEquals(usersActual, usersExpected)
     }
 
     @Test
@@ -44,7 +44,7 @@ class UserRepositoryTest {
         assertEquals(userRepository.getUsers().size, initialSize + 1)
         assertTrue(
             FAKE_USERS_RANDOM.filter {
-                it.equals(user)
+                it == user
             }.isNotEmpty()
         )
     }
@@ -53,6 +53,42 @@ class UserRepositoryTest {
     fun deleteUserWithSuccess() {
         val userToDelete = userRepository.getUsers()[0]
         userRepository.deleteUser(userToDelete)
-        Assert.assertFalse(userRepository.getUsers().contains(userToDelete))
+        assertFalse(userRepository.getUsers().contains(userToDelete))
+    }
+
+    @Test
+    fun toggleUserActiveStatusWithSuccess() {
+        val user = userRepository.getUsers()[0]
+        val initialStatus = user.isActive
+
+        user.isActive = !initialStatus
+        userRepository.updateUser(user)
+
+        val updatedUser = userRepository.getUsers().find { it.id == user.id }
+        assertNotNull(updatedUser)
+        assertEquals(updatedUser?.isActive, !initialStatus)
+    }
+
+    @Test
+    fun ensureToggleDoesNotAffectListSize() {
+        val initialSize = userRepository.getUsers().size
+        val user = userRepository.getUsers()[0]
+
+        user.isActive = !user.isActive
+        userRepository.updateUser(user)
+
+        assertEquals(userRepository.getUsers().size, initialSize)
+    }
+
+    @Test
+    fun ensureUpdatedUserIsSameInstance() {
+        val user = userRepository.getUsers()[0]
+
+        user.isActive = !user.isActive
+        userRepository.updateUser(user)
+
+        val updatedUser = userRepository.getUsers().find { it.id == user.id }
+        assertNotNull(updatedUser)
+        assertSame(user, updatedUser)
     }
 }
